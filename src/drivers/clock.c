@@ -318,3 +318,38 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
     // success
     return true;
 }
+
+void Clock_EnablePeripheral(void* base) {
+    // GPIO
+    if(base == GPIOA)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+    else if(base == GPIOB)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOBEN;
+    else if(base == GPIOC)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+    else if(base == GPIOD)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+    else if(base == GPIOE)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOEEN;
+    else if(base == GPIOF)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOFEN;
+    else if(base == GPIOG)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN;
+    else if(base == GPIOH)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOHEN;
+    else if(base == GPIOI)
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOIEN;
+    // USART
+    else if(base == USART1)
+	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+    else if(base == USART2)
+	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+    else if(base == USART3)
+	RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
+    else if(base == UART4)
+	RCC->APB1ENR |= RCC_APB1ENR_UART4EN;
+    else if(base == UART5)
+	RCC->APB1ENR |= RCC_APB1ENR_UART5EN;
+    else if(base == USART6)
+	RCC->APB2ENR |= RCC_APB2ENR_USART6EN;
+}

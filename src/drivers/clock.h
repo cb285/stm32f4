@@ -23,5 +23,6 @@ bool Clock_SetSystemSource(clock_t clock);
 uint32_t Clock_GetSystemClkFreq(void);
 bool Clock_SetPllSource(clock_t clock);
 bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_t pllp);
+void Clock_EnablePeripheral(void* base);
 
 #endif // _CLOCK_H
