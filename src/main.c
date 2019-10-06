@@ -2,25 +2,27 @@
 #include <stdbool.h>
 #include "stm32f4xx.h"
 #include "board_config.h"
+#include "drivers/board.h"
 #include "drivers/clock.h"
 #include "drivers/pin.h"
 #include "utils/debug.h"
 
-void Error(void);
-void Blink_Led(uint32_t led, uint32_t delay);
 void Delay_Ms(uint32_t count);
 
 int main(void) {
+    /*
     // enable PWR interface clock
-    //REG_SET(RCC->APB1ENR, 1 << 28);
+    RCC->APB1ENR |= 1 << 28;
 
     // enable voltage scale 2 mode
-    //REG_CLR(PWR->CR, PWR_CR_VOS);
+    PWR->CR &= ~PWR_CR_VOS;
 
     // wait for voltage scale to be set
-    //while(!(REG_READ(PWR->CSR, 1 << 14)));
-    
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
+    while(!(PWR->CSR & (1 << 14)));
+    */
+
+    // init clock
+    Board_Init();
     
     pin_options_t green;
     green.port = GPIOD;
@@ -37,8 +39,9 @@ int main(void) {
 
     Debug_Create();
     
+    uint32_t i = 0;
     while(1) {
-	Debug_Log(DEBUG__LEVEL__INFO, "test123");
+	Debug_Log(DEBUG__LEVEL__INFO, "%d", i++);
 	
 	Pin_Set(GPIOD, LED_GREEN);
 	Delay_Ms(50);
@@ -53,67 +56,18 @@ int main(void) {
 	Delay_Ms(50);
     }
 	
-    // disable PLL for configuring
-    Clock_Disable(CLOCK__PLL);
-
-    // enable HSE clock for PLL source
-    Clock_Enable(CLOCK__HSE);
-
-    if(!Clock_SetSystemSource(CLOCK__HSE))
-	Error();
-	
-    // configure PLL
-    if(!Clock_ConfigPll(CLOCK__HSE, PLL_M, PLL_N, PLL_P))
-	Error();
-	
-    // enable and set PLL as system source clock
-    if(!Clock_SetSystemSource(CLOCK__PLL))
-	Error();
-
-    //GPIOD->ODR |= (1 << LED_GREEN);
-	
-    while(1);
-	
-    //Blink_Led(LED_GREEN, 100);
-
     return 0;
 }
 
-void Error(void)
+void Delay_Ms(uint32_t delay)
 {
-    Blink_Led(LED_RED, 10);
-}
-
-void Blink_Led(uint32_t led, uint32_t delay)
-{
-    while(1)
-	{
-	    GPIOD->ODR |= (1 << led);
-		
-	    Delay_Ms(delay);
-	    
-	    GPIOD->ODR &= ~(1 << led);
-	    Delay_Ms(delay);
-	}
-}
-
-void Delay_Ms(uint32_t count)
-{
-	
     uint32_t i;
     uint32_t j;
-    //uint32_t loops = 168000000; //(uint32_t)(((float)count / 1000.0) * (float)168000000);
-	
-    for(i = 0; i < count; i++)
-	for(j = 0; j < 10000; j++) //168000
+    uint32_t freq = Clock_GetFreq(CLOCK__SYSCLK);
+
+    //Debug_Log(DEBUG__LEVEL__INFO, "sysclk freq = %lu", freq);
+    
+    for(i = 0; i < delay; i++)
+	for(j = 0; j < (freq / (20000)); j++)
 	    ASM VOLATILE("nop");
-	
-    /*
-      uint32_t i;
-      uint32_t j;
-	
-      for(i = 0; i < count; i++)
-      for(j = 0; j < 168000; j++)
-      ASM VOLATILE("nop");
-    */
 }

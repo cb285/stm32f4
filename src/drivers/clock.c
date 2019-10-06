@@ -117,7 +117,7 @@ bool Clock_SetSystemSource(clock_t clock)
     // enable clock before setting as source
     if(!Clock_Enable(clock))
 	return false;
-	
+    
     switch(clock) {
     case CLOCK__HSI:
 	// switch to source
@@ -142,8 +142,8 @@ bool Clock_SetSystemSource(clock_t clock)
     case CLOCK__PLL:
 
 	// @TODO: setup flash for higher clock speed
-	FLASH->ACR |= FLASH_ACR_LATENCY_3WS; // three wait states is the minimum for 168MHz clock
-	FLASH->ACR |= FLASH_ACR_PRFTEN;  // prefetch enable
+	FLASH->ACR |= FLASH_ACR_LATENCY_5WS; // five wait states is the minimum for 168MHz clock
+	FLASH->ACR |= FLASH_ACR_PRFTEN;      // enable prefetch
 	
 	// switch to source
 	RCC->CFGR &= ~RCC_CFGR_SW;
@@ -165,8 +165,19 @@ bool Clock_SetSystemSource(clock_t clock)
     return true;
 }
 
-uint32_t Clock_GetSystemClkFreq(void) {
-    return _system_clock->freq;
+uint32_t Clock_GetFreq(clock_t clock) {
+    switch(clock) {
+    case CLOCK__HSI:
+	return _hsi.freq;
+    case CLOCK__HSE:
+	return _hse.freq;
+    case CLOCK__PLL:
+	return _pll.freq;
+    case CLOCK__SYSCLK:
+	return _system_clock->freq;
+    default:
+	return 0;
+    }
 }
 
 bool Clock_SetPllSource(clock_t clock) {
@@ -356,5 +367,5 @@ void Clock_EnablePeripheral(const void* base) {
 
 // @TODO
 uint32_t Clock_GetPeripheralFreq(const void* base) {
-    return Clock_GetSystemClkFreq();
+    return Clock_GetFreq(CLOCK__SYSCLK);
 }

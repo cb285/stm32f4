@@ -8,6 +8,7 @@ typedef enum {
 	CLOCK__HSI,
 	CLOCK__HSE,
 	CLOCK__PLL,
+	CLOCK__SYSCLK
 } clock_t;
 
 // private clock type
@@ -20,7 +21,7 @@ typedef struct {
 bool Clock_Enable(clock_t clock);
 bool Clock_Disable(clock_t clock);
 bool Clock_SetSystemSource(clock_t clock);
-uint32_t Clock_GetSystemClkFreq(void);
+uint32_t Clock_GetFreq(clock_t clock);
 bool Clock_SetPllSource(clock_t clock);
 bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_t pllp);
 void Clock_EnablePeripheral(const void* base);
