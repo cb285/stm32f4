@@ -36,16 +36,22 @@ int main(void) {
     Pin_Create(&red);
 
     usart_options_t usart_opts;
-    usart_opts.base = USART1;
+    usart_opts.base = USART2;
     usart_opts.baudrate = 9600;
-    usart_opts.mode = USART__MODE_USART;
-    usart_opts.data_len = USART__DATA_LEN_8BITS;
-    usart_opts.stop_bits = USART__STOP_BITS_1;
+    usart_opts.mode = USART__MODE__USART;
+    usart_opts.data_len = USART__DATA_LEN__8BITS;
+    usart_opts.stop_bits = USART__STOP_BITS__1;
+    usart_opts.tx_port = GPIOA;
+    usart_opts.tx_pin = 2;
+    usart_opts.tx_mode = PIN__MODE__AF7;
+    usart_opts.rx_port = GPIOA;
+    usart_opts.rx_pin = 3;
+    usart_opts.rx_mode = PIN__MODE__AF7;
     
     usart_t usart = Usart_Create(&usart_opts);
     
     while(1) {
-	//Usart_Transmit(usart, 'a');
+	Usart_Transmit(usart, 'a');
 	
 	Pin_Set(GPIOD, LED_GREEN);
 	Delay_Ms(50);
