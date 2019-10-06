@@ -8,26 +8,28 @@
 usart_t Usart_Create(const usart_options_t* options)
 {
     USART_TypeDef* base = options->base;
-	
+    pin_options_t tx = {};
+    pin_options_t rx = {};
+    
+    // configure pins
+    tx.port = options->tx_port;
+    tx.pin = options->tx_pin;
+    tx.mode = options->tx_mode;
+    Pin_Create(&tx);
+    
+    rx.port = options->rx_port;
+    rx.pin = options->rx_pin;
+    rx.mode = options->rx_mode;
+    Pin_Create(&rx);
+    
     // enable peripheral clock
-    if(base == USART1)
-	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-    else if(base == USART2)
-	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
-    else if(base == USART3)
-	RCC->APB1ENR |= RCC_APB1ENR_USART3EN;
-    else if(base == UART4)
-	RCC->APB1ENR |= RCC_APB1ENR_UART4EN;
-    else if(base == UART5)
-	RCC->APB1ENR |= RCC_APB1ENR_UART5EN;
-    else if(base == USART6)
-	RCC->APB2ENR |= RCC_APB2ENR_USART6EN;
-	
+    Clock_EnablePeripheral(base);
+    
     // enable usart
     base->CR1 |= USART_CR1_UE;
-
+    
     // set data length
-    if(options->data_len == USART__DATA_LEN_8BITS)
+    if(options->data_len == USART__DATA_LEN__8BITS)
 	base->CR1 &= ~USART_CR1_M;
     else
 	base->CR1 |= USART_CR1_M;
@@ -36,15 +38,15 @@ usart_t Usart_Create(const usart_options_t* options)
     base->CR2 &= ~USART_CR2_STOP;
     switch(options->stop_bits)
 	{
-	case USART__STOP_BITS_0P5:
+	case USART__STOP_BITS__0P5:
 	    base->CR2 |= (1 << 12);
 	    break;
-	case USART__STOP_BITS_1:
+	case USART__STOP_BITS__1:
 	    break;
-	case USART__STOP_BITS_1P5:
+	case USART__STOP_BITS__1P5:
 	    base->CR2 |= (3 << 12);
 	    break;
-	case USART__STOP_BITS_2:
+	case USART__STOP_BITS__2:
 	    base->CR2 |= (2 << 12);
 	    break;
 	}
@@ -53,7 +55,8 @@ usart_t Usart_Create(const usart_options_t* options)
     base->CR1 &= ~USART_CR1_OVER8;
     
     // set baudrate
-    uint16_t divider = options->baudrate / (16 * Clock_GetSystemClkFreq());
+    /*
+    uint16_t divider = options->baudrate / (16 * 8); //Clock_GetSystemClkFreq());
     uint16_t mantissa = (uint16_t)divider;
     uint8_t fraction = (uint8_t)((divider - mantissa) * 15.0);
     
@@ -61,6 +64,11 @@ usart_t Usart_Create(const usart_options_t* options)
 	Debug_Entry(DEBUG__LEVEL_ERROR, "mantissa too high");
     if(fraction >= 15)
 	Debug_Entry(DEBUG__LEVEL_ERROR, "fraction too high");
+	
+    base->BRR = ((mantissa << 4) | fraction);
+    */
+    // @TODO: system clock may not be the same as peripheral clock
+    base->BRR = Clock_GetSystemClkFreq() / options->baudrate;
     
     // enable transmitter
     base->CR1 |= USART_CR1_TE;
@@ -70,11 +78,11 @@ usart_t Usart_Create(const usart_options_t* options)
 
 void Usart_Transmit(const usart_t handle, const uint8_t c)
 {
+    // wait until TDR is empty
+    while(!(_BASE(handle)->SR & USART_SR_TXE));
+    
     // write data and start transmit
     _BASE(handle)->DR = c;
-    
-    // wait until transmit is complete
-    while(!(_BASE(handle)->SR & USART_SR_TC));
 }
 
 /*
