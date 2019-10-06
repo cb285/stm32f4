@@ -22,7 +22,7 @@ void Debug_Create(void) {
     
     usart_options_t usart_opts;
     usart_opts.base = USART2;
-    usart_opts.baudrate = 115200;
+    usart_opts.baudrate = 500000;
     usart_opts.mode = USART__MODE__USART;
     usart_opts.data_len = USART__DATA_LEN__8BITS;
     usart_opts.stop_bits = USART__STOP_BITS__1;
