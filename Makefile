@@ -15,7 +15,7 @@ OBJCOPY := @arm-none-eabi-objcopy
 
 ###################################################
 
-CFLAGS := -g -O0 -Wall -T$(LDSCRIPT) -include $(COMPILER_CONF)
+CFLAGS := -O2 -Wall -T$(LDSCRIPT) -include $(COMPILER_CONF)
 #CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
 CFLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 CFLAGS += -std=gnu99
