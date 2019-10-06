@@ -6,6 +6,7 @@
 #include "drivers/clock.h"
 #include "drivers/pin.h"
 #include "utils/debug.h"
+#include "utils/delay.h"
 
 void Delay_Ms(uint32_t count);
 
@@ -57,17 +58,4 @@ int main(void) {
     }
 	
     return 0;
-}
-
-void Delay_Ms(uint32_t delay)
-{
-    uint32_t i;
-    uint32_t j;
-    uint32_t freq = Clock_GetFreq(CLOCK__SYSCLK);
-
-    //Debug_Log(DEBUG__LEVEL__INFO, "sysclk freq = %lu", freq);
-    
-    for(i = 0; i < delay; i++)
-	for(j = 0; j < (freq / (20000)); j++)
-	    ASM VOLATILE("nop");
 }
