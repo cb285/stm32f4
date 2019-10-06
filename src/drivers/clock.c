@@ -63,7 +63,7 @@ bool Clock_Enable(clock_t clock) {
 
 	// invalid clock
     default:
-	Debug_Entry(DEBUG__LEVEL_ERROR, "invalid clock");
+	Debug_Log(DEBUG__LEVEL__ERROR, "invalid clock");
 		
 	return false;
     }
@@ -103,7 +103,7 @@ bool Clock_Disable(clock_t clock) {
 
 	// invalid clock
     default:
-	Debug_Entry(DEBUG__LEVEL_ERROR, "invalid clock");
+	Debug_Log(DEBUG__LEVEL__ERROR, "invalid clock");
 		
 	return false;
     }
@@ -156,7 +156,7 @@ bool Clock_SetSystemSource(clock_t clock)
 	
 	// invalid clock
     default:
-	Debug_Entry(DEBUG__LEVEL_ERROR, "invalid clock");
+	Debug_Log(DEBUG__LEVEL__ERROR, "invalid clock");
 	
 	return false;
     }
@@ -172,7 +172,7 @@ uint32_t Clock_GetSystemClkFreq(void) {
 bool Clock_SetPllSource(clock_t clock) {
     // check if PLL is enabled
     if(_pll.enabled) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "pll is enabled");
+	Debug_Log(DEBUG__LEVEL__ERROR, "pll is enabled");
 	return false;
     }
     
@@ -199,7 +199,7 @@ bool Clock_SetPllSource(clock_t clock) {
 
 	// invalid clock
     default:
-	Debug_Entry(DEBUG__LEVEL_ERROR, "invalid source clock");
+	Debug_Log(DEBUG__LEVEL__ERROR, "invalid source clock");
 	
 	return false;
     }
@@ -224,13 +224,13 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
     
     // check if pll is enabled
     if(_pll.enabled == true) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "pll is enabled");
+	Debug_Log(DEBUG__LEVEL__ERROR, "pll is enabled");
 	return false;
     }
 	
     // set pll source clock
     if(!Clock_SetPllSource(source_clock)) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "pll source couldn't be enabled");
+	Debug_Log(DEBUG__LEVEL__ERROR, "pll source couldn't be enabled");
 	return false;
     }
 	
@@ -240,19 +240,19 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
     // validate inputs
     // check plln
     if(!(50 <= plln && plln <= 432)) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "plln is out of range");
+	Debug_Log(DEBUG__LEVEL__ERROR, "plln is out of range");
 	return false;
     }
 	
     // check pllp
     if(!(((pllp % 2) == 0) && (2 <= pllp && pllp <= 8))) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "pllp is out of range");
+	Debug_Log(DEBUG__LEVEL__ERROR, "pllp is out of range");
 	return false;
     }
 
     // check pllm
     if(!(2 <= pllm && pllm <= 63)) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "pllm is out of range");
+	Debug_Log(DEBUG__LEVEL__ERROR, "pllm is out of range");
 	return false;
     }
 
@@ -264,7 +264,7 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
 
     // check vco input frequency is in range
     if(!(1000000 <= vco_input_freq && vco_input_freq <= 2000000)) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "vco input frequency is out of range");
+	Debug_Log(DEBUG__LEVEL__ERROR, "vco input frequency is out of range");
 	return false;
     }
 	
@@ -277,7 +277,7 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
 	
     // check if could find a valid pllq setting
     if(!pllq_found) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "couldn't create 48MHz pllq clock");
+	Debug_Log(DEBUG__LEVEL__ERROR, "couldn't create 48MHz pllq clock");
 	return false;
     }
 	
@@ -286,13 +286,13 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
 	
     // check if vco output frequency is in range
     if(!(100000000 <= vco_freq && vco_freq <= 432000000)) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "vco frequency is out of range");
+	Debug_Log(DEBUG__LEVEL__ERROR, "vco frequency is out of range");
 	return false;
     }
 
     // check if pll output frequency is in range
     if(!(pll_freq <= 168000000)) {
-	Debug_Entry(DEBUG__LEVEL_ERROR, "pll output freq is out of range");
+	Debug_Log(DEBUG__LEVEL__ERROR, "pll output freq is out of range");
 	return false;
     }
 
@@ -319,7 +319,7 @@ bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_
     return true;
 }
 
-void Clock_EnablePeripheral(void* base) {
+void Clock_EnablePeripheral(const void* base) {
     // GPIO
     if(base == GPIOA)
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
@@ -352,4 +352,9 @@ void Clock_EnablePeripheral(void* base) {
 	RCC->APB1ENR |= RCC_APB1ENR_UART5EN;
     else if(base == USART6)
 	RCC->APB2ENR |= RCC_APB2ENR_USART6EN;
+}
+
+// @TODO
+uint32_t Clock_GetPeripheralFreq(const void* base) {
+    return Clock_GetSystemClkFreq();
 }

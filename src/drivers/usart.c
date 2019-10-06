@@ -61,14 +61,15 @@ usart_t Usart_Create(const usart_options_t* options)
     uint8_t fraction = (uint8_t)((divider - mantissa) * 15.0);
     
     if(mantissa >= 4095)
-	Debug_Entry(DEBUG__LEVEL_ERROR, "mantissa too high");
+	Debug_Log(DEBUG__LEVEL_ERROR, "mantissa too high");
     if(fraction >= 15)
-	Debug_Entry(DEBUG__LEVEL_ERROR, "fraction too high");
+	Debug_Log(DEBUG__LEVEL_ERROR, "fraction too high");
 	
     base->BRR = ((mantissa << 4) | fraction);
     */
-    // @TODO: system clock may not be the same as peripheral clock
-    base->BRR = Clock_GetSystemClkFreq() / options->baudrate;
+
+    // configure baud rate
+    base->BRR = Clock_GetPeripheralFreq(base) / options->baudrate;
     
     // enable transmitter
     base->CR1 |= USART_CR1_TE;
@@ -83,6 +84,12 @@ void Usart_Transmit(const usart_t handle, const uint8_t c)
     
     // write data and start transmit
     _BASE(handle)->DR = c;
+}
+
+void Usart_WriteString(const usart_t handle, const char* str) {
+    uint32_t i = 0;
+    while(str[i] != '\0')
+	Usart_Transmit(handle, str[i++]);
 }
 
 /*

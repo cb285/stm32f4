@@ -2,9 +2,9 @@
 #include <stdbool.h>
 #include "stm32f4xx.h"
 #include "board_config.h"
-#include "clock.h"
-#include "pin.h"
-#include "usart.h"
+#include "drivers/clock.h"
+#include "drivers/pin.h"
+#include "utils/debug.h"
 
 void Error(void);
 void Blink_Led(uint32_t led, uint32_t delay);
@@ -35,23 +35,10 @@ int main(void) {
     Pin_Create(&green);
     Pin_Create(&red);
 
-    usart_options_t usart_opts;
-    usart_opts.base = USART2;
-    usart_opts.baudrate = 9600;
-    usart_opts.mode = USART__MODE__USART;
-    usart_opts.data_len = USART__DATA_LEN__8BITS;
-    usart_opts.stop_bits = USART__STOP_BITS__1;
-    usart_opts.tx_port = GPIOA;
-    usart_opts.tx_pin = 2;
-    usart_opts.tx_mode = PIN__MODE__AF7;
-    usart_opts.rx_port = GPIOA;
-    usart_opts.rx_pin = 3;
-    usart_opts.rx_mode = PIN__MODE__AF7;
-    
-    usart_t usart = Usart_Create(&usart_opts);
+    Debug_Create();
     
     while(1) {
-	Usart_Transmit(usart, 'a');
+	Debug_Log(DEBUG__LEVEL__INFO, "test123");
 	
 	Pin_Set(GPIOD, LED_GREEN);
 	Delay_Ms(50);
