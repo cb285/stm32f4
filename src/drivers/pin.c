@@ -1,4 +1,5 @@
 #include "pin.h"
+#include "drivers/clock.h"
 
 // mode register values
 #define _MODER_INPUT  0x0ul
@@ -28,12 +29,12 @@
 #define _PORT(x) ((GPIO_TypeDef*)x)
 
 bool Pin_Create(const pin_options_t* options) {
-
-    // enable clock
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIODEN;
     
     // get port
     GPIO_TypeDef* port = _PORT(options->port);
+    
+    // enable clock
+    Clock_EnablePeripheral(port);
     
     // clear mode
     port->MODER &= ~(_MODER_MASK << (options->pin * 2));
@@ -83,11 +84,11 @@ bool Pin_Create(const pin_options_t* options) {
 	// set alternate function number
 	if(options->pin <= 7) {
 	    port->AFR[0] &= ~(0xf << (4 * options->pin));
-	    port->AFR[0] |= (options->mode - PIN__MODE__AF0) << (4 * options->pin);
+	    port->AFR[0] |= ((options->mode - PIN__MODE__AF0) << (4 * options->pin));
 	}
 	else {
 	    port->AFR[1] &= ~(0xf << (4 * (options->pin - 8)));
-	    port->AFR[1] |= (options->mode - PIN__MODE__AF0) << (4 * (options->pin - 8));
+	    port->AFR[1] |= ((options->mode - PIN__MODE__AF0) << (4 * (options->pin - 8)));
 	}
 	
 	break;
