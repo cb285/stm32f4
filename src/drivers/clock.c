@@ -363,6 +363,14 @@ void Clock_EnablePeripheral(const void* base) {
 	RCC->APB1ENR |= RCC_APB1ENR_UART5EN;
     else if(base == USART6)
 	RCC->APB2ENR |= RCC_APB2ENR_USART6EN;
+
+    // SPI
+    else if(base == SPI1)
+	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+    else if(base == SPI2)
+	RCC->APB1ENR |= RCC_APB1ENR_SPI2EN;
+    else if(base == SPI3)
+	RCC->APB1ENR |= RCC_APB1ENR_SPI3EN;
 }
 
 // @TODO
