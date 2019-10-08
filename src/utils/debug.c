@@ -36,6 +36,8 @@ void Debug_Create(void) {
     _usart = Usart_Create(&usart_opts);
     
     _initialized = true;
+
+    _Print("\r\n");
 }
 
 void Debug_Log_(const char* file, int line, const char* func, debug_level_t level, const char *format, ...)
