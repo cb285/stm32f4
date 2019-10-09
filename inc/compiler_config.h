@@ -2,6 +2,7 @@
 #define _COMPILER_CONFIG_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define __I volatile const // defines 'read only' permissions
 #define __O volatile       // defines 'write only' permissions
