@@ -137,9 +137,9 @@ uint8_t Spi_Receive(const spi_t handle) {
     return _BASE(handle)->DR;
 }
 
-void Spi_Transfer(const spi_t handle, const uint8_t* tx1, uint8_t* rx1, uint32_t len1, const uint8_t* tx2, uint8_t* rx2, uint32_t len2) {
+void Spi_Transfer(const spi_t handle, const void* tx1, void* rx1, uint32_t len1, const void* tx2, void* rx2, uint32_t len2) {
     uint32_t i;
-
+    
     // manual CS control
     if(_HANDLE(handle)->cs_port) {
 	Pin_Clear(_HANDLE(handle)->cs_port, _HANDLE(handle)->cs_pin);
@@ -148,28 +148,26 @@ void Spi_Transfer(const spi_t handle, const uint8_t* tx1, uint8_t* rx1, uint32_t
     
     for(i = 0; i < len1; i++) {
 	if(tx1)
-	    Spi_Transmit(handle, tx1[i]);
+	    Spi_Transmit(handle, ((uint8_t*)tx1)[i]);
 	else
 	    Spi_Transmit(handle, 0);
 	if(rx1)
-	    rx1[i] = Spi_Receive(handle);
+	    ((uint8_t*)rx1)[i] = Spi_Receive(handle);
 	else
 	    Spi_Receive(handle);
-	i++;
     }
     
     for(i = 0; i < len2; i++) {
 	if(tx2)
-	    Spi_Transmit(handle, tx2[i]);
+	    Spi_Transmit(handle, ((uint8_t*)tx2)[i]);
 	else
 	    Spi_Transmit(handle, 0);
 	if(rx2)
-	    rx2[i] = Spi_Receive(handle);
+	    ((uint8_t*)rx2)[i] = Spi_Receive(handle);
 	else
 	    Spi_Receive(handle);
-	i++;
     }
-
+    
     // manual CS control
     if(_HANDLE(handle)->cs_port) {
 	Pin_Set(_HANDLE(handle)->cs_port, _HANDLE(handle)->cs_pin);
