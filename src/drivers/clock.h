@@ -9,7 +9,7 @@ typedef enum {
 	CLOCK__HSE,
 	CLOCK__PLL,
 	CLOCK__SYSCLK
-} clock_t;
+} mclock_t;
 
 // private clock type
 typedef struct {
@@ -18,12 +18,12 @@ typedef struct {
 	uint32_t freq; 	// frequency in Hz
 } _clock_t;
 
-bool Clock_Enable(clock_t clock);
-bool Clock_Disable(clock_t clock);
-bool Clock_SetSystemSource(clock_t clock);
-uint32_t Clock_GetFreq(clock_t clock);
-bool Clock_SetPllSource(clock_t clock);
-bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_t pllp);
+bool Clock_Enable(mclock_t clock);
+bool Clock_Disable(mclock_t clock);
+bool Clock_SetSystemSource(mclock_t clock);
+uint32_t Clock_GetFreq(mclock_t clock);
+bool Clock_SetPllSource(mclock_t clock);
+bool Clock_ConfigPll(mclock_t source_clock, uint32_t pllm, uint32_t plln, uint32_t pllp);
 void Clock_EnablePeripheral(const void* base);
 uint32_t Clock_GetPeripheralFreq(const void* base);
 

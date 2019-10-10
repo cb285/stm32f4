@@ -23,7 +23,7 @@ static _clock_t _pll = {
 // system clock source is hsi on reset
 static _clock_t* _system_clock = &_hsi;
 
-bool Clock_Enable(clock_t clock) {
+bool Clock_Enable(mclock_t clock) {
     switch(clock) {
     case CLOCK__HSI:
 	// turn on
@@ -72,7 +72,7 @@ bool Clock_Enable(clock_t clock) {
     return true;
 }
 
-bool Clock_Disable(clock_t clock) {
+bool Clock_Disable(mclock_t clock) {
     switch(clock) {
     case CLOCK__HSI:
 	// turn off
@@ -112,7 +112,7 @@ bool Clock_Disable(clock_t clock) {
     return true;
 }
 
-bool Clock_SetSystemSource(clock_t clock)
+bool Clock_SetSystemSource(mclock_t clock)
 {
     // enable clock before setting as source
     if(!Clock_Enable(clock))
@@ -165,7 +165,7 @@ bool Clock_SetSystemSource(clock_t clock)
     return true;
 }
 
-uint32_t Clock_GetFreq(clock_t clock) {
+uint32_t Clock_GetFreq(mclock_t clock) {
     switch(clock) {
     case CLOCK__HSI:
 	return _hsi.freq;
@@ -180,7 +180,7 @@ uint32_t Clock_GetFreq(clock_t clock) {
     }
 }
 
-bool Clock_SetPllSource(clock_t clock) {
+bool Clock_SetPllSource(mclock_t clock) {
     // check if PLL is enabled
     if(_pll.enabled) {
 	Debug_Log(DEBUG__LEVEL__ERROR, "pll is enabled");
@@ -225,7 +225,7 @@ bool Clock_SetPllSource(clock_t clock) {
 // N: 50-432
 // M: 0-63
 // P: 0-3, 0 = 2, 1 = 4, 2 = 6, 3 = 8
-bool Clock_ConfigPll(clock_t source_clock, uint32_t pllm, uint32_t plln, uint32_t pllp) {
+bool Clock_ConfigPll(mclock_t source_clock, uint32_t pllm, uint32_t plln, uint32_t pllp) {
     uint32_t vco_freq;
     uint32_t vco_input_freq;
     bool pllq_found = false;
