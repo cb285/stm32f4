@@ -40,10 +40,14 @@ int main(void) {
     Debug_Create();
     
     Mpu_Create();
+
+    int16_t x, y, z;
     
     while(1) {
-	Debug_Log(DEBUG__LEVEL__INFO, "WHO_AM_I = 0x%x", Mpu_Read(0xf));
-	
+	Mpu_Read(&x, &y, &z);
+	//Debug_Log(DEBUG__LEVEL__INFO, "%d.%d, %d.%d, %d.%d", x_int / 100, x_int % 100, y_int / 100, y_int % 100, z_int / 100, z_int % 100);
+	Debug_Log(DEBUG__LEVEL__INFO, "%d, %d, %d", x, y, z);
+	/*
 	Pin_Set(GPIOD, LED_GREEN);
 	Delay_Ms(50);
 	Pin_Clear(GPIOD, LED_GREEN);
@@ -55,6 +59,7 @@ int main(void) {
 	Pin_Clear(GPIOD, LED_RED);
 	
 	Delay_Ms(50);
+	*/
     }
 	
     return 0;

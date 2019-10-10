@@ -4,7 +4,6 @@
 #include <stdbool.h>
 
 bool Mpu_Create(void);
-uint8_t Mpu_Read(uint8_t reg);
-void Mpu_Write(uint8_t reg, uint8_t data);
+void Mpu_Read(int16_t* x, int16_t* y, int16_t* z);
 
 #endif // _MPU_H_
