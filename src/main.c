@@ -8,6 +8,8 @@
 #include "utils/debug.h"
 #include "utils/delay.h"
 #include "drivers/mpu.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(void) {
     /*
@@ -41,12 +43,34 @@ int main(void) {
     
     Mpu_Create();
 
-    int16_t x, y, z;
+    double x, y, z;
+    int x_int, y_int, z_int;
+    char x_str[5];
+    char y_str[5];
+    char z_str[5];
     
     while(1) {
 	Mpu_Read(&x, &y, &z);
-	//Debug_Log(DEBUG__LEVEL__INFO, "%d.%d, %d.%d, %d.%d", x_int / 100, x_int % 100, y_int / 100, y_int % 100, z_int / 100, z_int % 100);
-	Debug_Log(DEBUG__LEVEL__INFO, "%d, %d, %d", x, y, z);
+
+	x_int = x * 100;
+	y_int = y * 100;
+	z_int = z * 100;
+	
+	if(x_int < 0)
+	    sprintf(x_str, "-%d.%02d", abs(x_int) / 100, abs(x_int) % 100);
+	else
+	    sprintf(x_str, "%d.%02d", x_int / 100, x_int % 100);
+	if(y_int < 0)
+	    sprintf(y_str, "-%d.%02d", abs(y_int) / 100, abs(y_int) % 100);
+	else
+	    sprintf(y_str, "%d.%02d", y_int / 100, y_int % 100);
+	if(z_int < 0)
+	    sprintf(z_str, "-%d.%02d", abs(z_int) / 100, abs(z_int) % 100);
+	else
+	    sprintf(z_str, "%d.%02d", z_int / 100, z_int % 100);
+	    
+	Debug_Log(DEBUG__LEVEL__INFO, "%s, %s, %s", x_str, y_str, z_str);
+	
 	/*
 	Pin_Set(GPIOD, LED_GREEN);
 	Delay_Ms(50);
