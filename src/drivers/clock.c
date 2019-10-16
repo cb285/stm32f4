@@ -371,6 +371,36 @@ void Clock_EnablePeripheral(const void* base) {
 	RCC->APB1ENR |= RCC_APB1ENR_SPI2EN;
     else if(base == SPI3)
 	RCC->APB1ENR |= RCC_APB1ENR_SPI3EN;
+
+    // TIM
+    else if(base == TIM1)
+	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    else if(base == TIM2)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+    else if(base == TIM3)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN;
+    else if(base == TIM4)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
+    else if(base == TIM5)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM5EN;
+    else if(base == TIM6)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+    else if(base == TIM7)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
+    else if(base == TIM8)
+	RCC->APB2ENR |= RCC_APB2ENR_TIM8EN;
+    else if(base == TIM9)
+	RCC->APB2ENR |= RCC_APB2ENR_TIM9EN;
+    else if(base == TIM10)
+	RCC->APB2ENR |= RCC_APB2ENR_TIM10EN;
+    else if(base == TIM11)
+	RCC->APB2ENR |= RCC_APB2ENR_TIM11EN;
+    else if(base == TIM12)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM12EN;
+    else if(base == TIM13)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM13EN;
+    else if(base == TIM14)
+	RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
 }
 
 // @TODO
