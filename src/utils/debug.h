@@ -9,6 +9,9 @@
 // rename function to include filename, line, and caller function
 #define Debug_Log(level, ...) Debug_Log_(__FILE__, __LINE__, __FUNCTION__, level, __VA_ARGS__)
 
+// quick debug printing function
+#define Debug_Print(...) Debug_Log(DEBUG__LEVEL__INFO, __VA_ARGS__)
+
 typedef enum {
 	DEBUG__LEVEL__NONE,  // nothing
 	DEBUG__LEVEL__ERROR, // errors only
