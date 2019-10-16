@@ -41,7 +41,10 @@ typedef struct {
 } usart_options_t;
 
 usart_t Usart_Create(const usart_options_t* config);
+uint8_t Usart_Receive(const usart_t handle, uint32_t timeout);
+uint32_t Usart_Read(const usart_t handle, void* data, uint32_t max_len, uint32_t timeout);
 void Usart_Transmit(const usart_t handle, const uint8_t c);
+void Usart_Write(const usart_t handle, const void* data, uint32_t len);
 void Usart_WriteString(const usart_t handle, const char* str);
 
 #endif // _USART_H
