@@ -4,7 +4,7 @@ BUILD_DIR := build
 OBJ_DIR := $(BUILD_DIR)/obj
 DEP_DIR := $(BUILD_DIR)/dep
 LDSCRIPT := stm32_flash.ld
-COMPILER_CONF := ./inc/"compiler_config.h"
+COMPILER_CONF := ./src/include/compiler_config.h
 
 ###################################################
 
@@ -25,7 +25,8 @@ CFLAGS += -std=gnu99
 LDFLAGS := -g -O0 -Wall -T$(LDSCRIPT)
 #LDFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
 LDFLAGS += -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-LDFLAGS += -specs=nano.specs -specs=nosys.specs
+LDFLAGS += -specs=nosys.specs
+LDFLAGS += -u _printf_float --enable-newlib-io-long-long
 
 DFLAGS := -MD -MP -MF $(DEP_DIR)/$*.d
 CFLAGS += $(DFLAGS)
@@ -39,7 +40,7 @@ ROOT := $(shell pwd)
 SRCS := $(shell find . -name '*.c')
 SRCS += $(shell find . -name '*.s')
 
-INCLUDE_DIR_NAMES = src inc Inc Include drivers
+INCLUDE_DIR_NAMES = src include inc Inc Include drivers
 INCLUDE_DIRS = $(foreach dir, $(INCLUDE_DIR_NAMES), $(shell find -type d -name $(dir)))
 INCLUDE_DIRS := $(filter-out %$(BUILD_DIR), $(INCLUDE_DIRS)) # don't include files in the build directory
 CFLAGS += $(addprefix -I, $(INCLUDE_DIRS))

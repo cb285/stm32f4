@@ -1,15 +1,28 @@
 #include "delay.h"
-#include "drivers/clock.h"
+#include "drivers/timer.h"
+#include <stdbool.h>
 
-void Delay_Us(uint32_t delay)
-{
-    uint32_t i;
-    uint32_t j;
-    uint32_t freq = Clock_GetFreq(CLOCK__SYSCLK);
+static uint32_t _initialized = false;
+static uint32_t _freq;
+
+void Delay_Us(uint32_t delay) {
+    uint64_t target;
     
-    for(i = 0; i < delay; i++)
-	for(j = 0; j < (freq / 20000000); j++)
-	    ASM VOLATILE("nop");
+    if(!_initialized) {
+	// create timer
+	Timer_Create();
+
+	// get frequency
+	_freq = Timer_GetFreq();
+
+	_initialized = true;
+    }
+    
+    // calculate target counter value
+    target = Timer_Read() + (delay * (_freq / 1000000.0));
+    
+    // wait to reach target
+    while(Timer_Read() < target);
 }
 
 void Delay_Ms(uint32_t delay) {
