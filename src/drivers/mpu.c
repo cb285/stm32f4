@@ -1,8 +1,8 @@
 #include "mpu.h"
 #include "drivers/spi.h"
 
-// to m/s^2
-#define _CONVERT(x) (x * (9.80665 * 2.0 / 32767.0))
+// to mg
+#define _CONVERT(x) (x * (2000.0 / 32767.0))
 
 // registers
 #define _WHO_AM_I                0xf
@@ -116,16 +116,16 @@ bool Mpu_Create(void) {
     return true;
 }
 
-void Mpu_Read(double* x, double* y, double* z) {
+void Mpu_Read(int32_t* x_mg, int32_t* y_mg, int32_t* z_mg) {
     int16_t xyz[3];
     
     // wait for data ready
     while(!(_Read8(_STATUS) & _STATUS__ZYXDA));
-
+    
     // read data
     _Read(_OUT_X, xyz, 6);
     
-    *x = _CONVERT(xyz[0]);
-    *y = _CONVERT(xyz[1]);
-    *z = _CONVERT(xyz[2]);
+    *x_mg = _CONVERT(xyz[0]);
+    *y_mg = _CONVERT(xyz[1]);
+    *z_mg = _CONVERT(xyz[2]);
 }
