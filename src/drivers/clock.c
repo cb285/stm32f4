@@ -401,6 +401,10 @@ void Clock_EnablePeripheral(const void* base) {
 	RCC->APB1ENR |= RCC_APB1ENR_TIM13EN;
     else if(base == TIM14)
 	RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
+
+    // SYSCFG
+    if(base == SYSCFG)
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 }
 
 // @TODO
