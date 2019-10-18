@@ -9,7 +9,7 @@
 
 static bool _initialized = false;
 static uint32_t _freq = 0;
-static uint32_t _upper32 = 0;
+volatile static uint32_t _upper32 = 0;
 
 void TIM2_IRQHandler(void) {
     
