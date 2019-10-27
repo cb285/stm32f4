@@ -46,6 +46,7 @@ typedef struct {
 } spi_options_t;
 
 spi_t Spi_Create(const spi_options_t* options);
+void Spi_Destroy(spi_t* handle_ptr);
 void Spi_Transmit(const spi_t handle, uint8_t c);
 uint8_t Spi_Receive(const spi_t handle);
 void Spi_Transfer(const spi_t handle, const void* tx1, void* rx1, uint32_t len1, const void* tx2, void* rx2, uint32_t len2);

@@ -108,6 +108,19 @@ spi_t Spi_Create(const spi_options_t* options) {
     return handle;
 }
 
+void Spi_Destroy(spi_t* handle_ptr) {
+
+    // check valid
+    if(!handle_ptr || !*handle_ptr)
+	return;
+    
+    // free private handle
+    Free(*handle_ptr);
+    
+    // set handle to NULL to avoid reuse
+    *handle_ptr = NULL;
+}
+
 void Spi_Transmit(const spi_t handle, uint8_t c) {
 
     // do manual control if not in active transfer
