@@ -64,7 +64,7 @@ void Debug_Log_(const char* file, int line, const char* func, debug_level_t leve
     va_end(args);
     
     // create string to actually print
-    sprintf(print_str, "DEBUG (file:%s func:%s line:%d): %s" _ENDL, file, func, line, entry_str);
+    sprintf(print_str, "(%s, %s, %d): %s" _ENDL, file, func, line, entry_str);
     
     _Print(print_str);
 }
