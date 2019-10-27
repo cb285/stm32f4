@@ -2,8 +2,6 @@
 #include "drivers/clock.h"
 #include "drivers/irq.h"
 
-#include "utils/debug.h"
-
 // mode register values
 #define _MODER_INPUT  0x0ul
 #define _MODER_OUTPUT 0x1ul
@@ -90,9 +88,6 @@ void EXTI9_5_IRQHandler(void) {
 }
 
 void EXTI15_10_IRQHandler(void) {
-
-    Debug_Print("EXTI IRQ");
-    
     for(uint8_t bit = 10; bit < 16; bit++)
 	if(EXTI->PR & (1ul << bit))
 	    _HandleIrq(bit);
@@ -173,14 +168,17 @@ static bool _RegisterIrq(const pin_options_t* options) {
     // check if got slot
     if(!slot)
 	return false;
-
+    
     // fill slot info
     slot->port = options->port;
     slot->pin = options->pin;
     slot->irq_priority = options->irq_priority;
     slot->irq_handler = options->irq_handler;
     
-    // select correct EXTICR
+    // enable SYSCFG peripheral clock
+    Clock_EnablePeripheral(SYSCFG);
+    
+    // select correct EXTICR (0 is EXTICR1)
     uint8_t exticr = options->pin / 4;
     
     // get position of EXTIx field inside EXTICR
@@ -220,8 +218,6 @@ static bool _RegisterIrq(const pin_options_t* options) {
     // enable
     slot->enabled = true;
     Irq_Enable(irq);
-    
-    Clock_EnablePeripheral(SYSCFG);
     
     return true;
 }
