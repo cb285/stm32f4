@@ -15,6 +15,20 @@ typedef struct {
     bool active;
 } _spi_t;
 
+static inline void _WriteDr(const spi_t handle, const void* ptr, uint32_t index) {
+    if(ptr)
+	_BASE(handle)->DR = ((uint8_t*)ptr)[index];
+    else
+	_BASE(handle)->DR = 0;
+}
+
+static inline void _ReadDr(const spi_t handle, const void* ptr, uint32_t index) {
+    if(ptr)
+	((uint8_t*)ptr)[index] = _BASE(handle)->DR;
+    else
+	(void)_BASE(handle)->DR;
+}
+
 spi_t Spi_Create(const spi_options_t* options) {
     SPI_TypeDef* base = options->base;
 
@@ -151,34 +165,62 @@ uint8_t Spi_Receive(const spi_t handle) {
 }
 
 void Spi_Transfer(const spi_t handle, const void* tx1, void* rx1, uint32_t len1, const void* tx2, void* rx2, uint32_t len2) {
-    uint32_t i;
+    uint32_t idx_tx = 0;
+    uint32_t idx_rx = 0;
     
     // manual CS control
-    if(_HANDLE(handle)->cs_port) {
+    if(_HANDLE(handle)->cs_port)
 	Pin_Clear(_HANDLE(handle)->cs_port, _HANDLE(handle)->cs_pin);
-	_HANDLE(handle)->active = true;
+    
+    // set active flag
+    _HANDLE(handle)->active = true;
+        
+    // send first byte
+    if(idx_tx < len1) {
+	while(!(_BASE(handle)->SR & SPI_SR_TXE));
+	_WriteDr(handle, tx1, idx_tx++);
     }
     
-    for(i = 0; i < len1; i++) {
-	if(tx1)
-	    Spi_Transmit(handle, ((uint8_t*)tx1)[i]);
-	else
-	    Spi_Transmit(handle, 0);
-	if(rx1)
-	    ((uint8_t*)rx1)[i] = Spi_Receive(handle);
-	else
-	    Spi_Receive(handle);
+    while(idx_tx < len1) {	
+	// load next byte
+	while(!(_BASE(handle)->SR & SPI_SR_TXE));
+	_WriteDr(handle, tx1, idx_tx++);
+
+	// receive byte
+	while(!(_BASE(handle)->SR & SPI_SR_RXNE));
+	_ReadDr(handle, rx1, idx_rx++);
+    }
+
+    // send first byte of tx2
+    idx_tx = 0;
+    if(idx_tx < len2) {
+	while(!(_BASE(handle)->SR & SPI_SR_TXE));
+	_WriteDr(handle, tx2, idx_tx++);
+    }
+
+    // receive last byte of rx1
+    if(idx_rx < len1) {
+	while(!(_BASE(handle)->SR & SPI_SR_RXNE));
+	_ReadDr(handle, rx1, idx_rx++);
     }
     
-    for(i = 0; i < len2; i++) {
-	if(tx2)
-	    Spi_Transmit(handle, ((uint8_t*)tx2)[i]);
-	else
-	    Spi_Transmit(handle, 0);
-	if(rx2)
-	    ((uint8_t*)rx2)[i] = Spi_Receive(handle);
-	else
-	    Spi_Receive(handle);
+    // receiving rx2 now
+    idx_rx = 0;
+
+    while(idx_tx < len2) {	
+	// load next byte
+	while(!(_BASE(handle)->SR & SPI_SR_TXE));
+	_WriteDr(handle, tx2, idx_tx++);
+	
+	// receive byte
+	while(!(_BASE(handle)->SR & SPI_SR_RXNE));
+	_ReadDr(handle, rx2, idx_rx++);
+    }
+
+    // receive last byte of rx2
+    if(idx_rx < len2) {
+	while(!(_BASE(handle)->SR & SPI_SR_RXNE));
+	_ReadDr(handle, rx2, idx_rx++);
     }
     
     // manual CS control
